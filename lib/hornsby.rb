@@ -1,8 +1,11 @@
+require File.dirname(__FILE__) + '/detect_framework'
+
 class Hornsby
   @@record_name_fields = %w( name title username login )
   @@delete_sql = "DELETE FROM %s"
   
   cattr_reader :scenarios
+  cattr_accessor :orm
   @@scenarios = {}
   # @@namespaces = {}
   
@@ -102,7 +105,15 @@ class Hornsby
   end
   
   def delete_tables
-    tables.each { |t| ActiveRecord::Base.connection.delete(@@delete_sql % t)  }
+    if @@orm == :activerecord
+      tables.each { |t| ActiveRecord::Base.connection.delete(@@delete_sql % t)  }
+    elsif @@orm == :datamapper
+      DataMapper::Resource.descendants.each do |klass|
+        klass.auto_migrate!
+      end
+    else
+      raise "Hornsby.orm must be set to either :activerecord or :datamapper"
+    end
   end
 
   def tables
@@ -126,3 +137,4 @@ module HornsbySpecHelper
     Hornsby.build(name).copy_ivars(self)
   end
 end
+Hornsby.orm = :activerecord
