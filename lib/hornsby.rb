@@ -16,8 +16,10 @@ class Hornsby
   
   def self.load(scenarios_file=nil)
     return unless @@scenarios.empty?
+
+    root = RAILS_ROOT rescue Merb.root
     
-    scenarios_file ||= RAILS_ROOT+'/spec/hornsby_scenarios.rb'
+    scenarios_file ||= root+'/spec/hornsby_scenarios.rb'
     
     self.module_eval File.read(scenarios_file)
   end
@@ -62,6 +64,7 @@ class Hornsby
     @context = context = Module.new
     
     ivars = context.instance_variables
+    @@completed_scenarios = []
     
     build_parent_scenarios(context)
     build_scenario(context)
@@ -72,7 +75,9 @@ class Hornsby
   end
   
   def build_scenario(context)
+    return if @@completed_scenarios.include?(@scenario)
     surface_errors { context.module_eval(&@block) }
+    @@completed_scenarios << @scenario
   end
   
   def build_parent_scenarios(context)

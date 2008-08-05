@@ -24,6 +24,9 @@ Hornsby.scenario(:bananas_and_apples_and_oranges => [:bananas_and_apples,:just_o
   @fruit = [@orange,@apple,@banana]
 end
 
+Hornsby.scenario(:bananas_and_more_apples => [:just_apple, :bananas_and_apples]) do
+end
+
 
 # Hornsby.namespace(:pitted_fruit) do
 #   scenario(:peach) do
@@ -92,6 +95,30 @@ describe Hornsby, "with fruit scenario" do
     @banana.should be_nil
   end
 end
+
+describe Hornsby, "don't repeat completed scenario" do
+  before do
+    Hornsby.build(:bananas_and_more_apples).copy_ivars(self)
+  end
+
+  it "should create only one apple" do
+    Fruit.find_all_by_species('apple').size.should == 1
+  end
+end
+
+=begin
+describe Hornsby, "run multiple scenarios" do
+  before do
+    #Hornsby.build(:bananas_and_more_apples).copy_ivars(self)
+    hornsby_scenario :just_apple, :just_orange
+  end
+
+  it "should create both apple and orange" do
+    @apple.should_not be_nil
+    @orange.should_not be_nil
+  end
+end
+=end
 
 #describe Hornsby, "with pitted namespace" do
 #  before do
