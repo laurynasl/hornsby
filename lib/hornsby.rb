@@ -109,7 +109,8 @@ class Hornsby
       tables.each { |t| ActiveRecord::Base.connection.delete(@@delete_sql % t)  }
     elsif @@orm == :datamapper
       DataMapper::Resource.descendants.each do |klass|
-        klass.auto_migrate!
+        #klass.auto_migrate!
+        klass.all.destroy!
       end
     else
       raise "Hornsby.orm must be set to either :activerecord or :datamapper"
