@@ -7,11 +7,23 @@ class Hornsby
   cattr_reader :scenarios
   cattr_accessor :orm
   @@scenarios = {}
-  # @@namespaces = {}
   
-  def self.build(name)
-    scenario = @@scenarios[name.to_sym] or raise "scenario #{name} not found"
-    scenario.build
+  def self.build(names, receiver_context)
+    delete_tables
+
+    context = Module.new
+    ivars = context.instance_variables
+    @@completed_scenarios = []
+
+    names.each do |name|
+      scenario = @@scenarios[name.to_sym] or raise "scenario #{name} not found"
+      scenario.build(context)
+    end
+
+    context_ivars = context.instance_variables - ivars
+    context_ivars.each do |iv|
+      receiver_context.instance_variable_set(iv, context.instance_variable_get(iv))
+    end
   end
   
   def self.[](name)
@@ -60,19 +72,11 @@ class Hornsby
     puts messages.map { |message| "=> #{message}" }
   end
 
-  def build
+  def build(context)
     #say "Building scenario `#{@scenario}'"
-    delete_tables
-    
-    @context = context = Module.new
-    
-    ivars = context.instance_variables
-    @@completed_scenarios = []
     
     build_parent_scenarios(context)
     build_scenario(context)
-    
-    @context_ivars = context.instance_variables - ivars
     
     self
   end
@@ -104,7 +108,7 @@ class Hornsby
     raise error
   end
   
-  def delete_tables
+  def self.delete_tables
     if @@orm == :activerecord
       tables.each { |t| ActiveRecord::Base.connection.delete(@@delete_sql % t)  }
     elsif @@orm == :datamapper
@@ -117,25 +121,19 @@ class Hornsby
     end
   end
 
-  def tables
+  def self.tables
     ActiveRecord::Base.connection.tables - skip_tables
   end
 
-  def skip_tables
+  def self.skip_tables
     %w( schema_info )
-  end
-  
-  def copy_ivars(to)
-    @context_ivars.each do |iv|
-      to.instance_variable_set(iv, @context.instance_variable_get(iv))
-    end
   end
 end
 
 
 module HornsbySpecHelper
-  def hornsby_scenario(name)
-    Hornsby.build(name).copy_ivars(self)
+  def hornsby_scenario(*names)
+    Hornsby.build(names, self)
   end
 end
 Hornsby.orm = :activerecord

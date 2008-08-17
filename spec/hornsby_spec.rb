@@ -40,7 +40,8 @@ end
 
 describe Hornsby, "with just_apple scenario" do
   before do
-    Hornsby.build(:just_apple).copy_ivars(self)
+    #Hornsby.build(:just_apple).copy_ivars(self)
+    hornsby_scenario :just_apple
   end
   
   it "should create @apple" do
@@ -62,7 +63,8 @@ end
 
 describe Hornsby, "with bananas_and_apples scenario" do
   before do
-    Hornsby.build(:bananas_and_apples).copy_ivars(self)
+    #Hornsby.build(:bananas_and_apples).copy_ivars(self)
+    hornsby_scenario :bananas_and_apples
   end
   
   it "should have correct @apple species" do
@@ -76,7 +78,8 @@ end
 
 describe Hornsby, "with fruit scenario" do
   before do
-    Hornsby.build(:fruit).copy_ivars(self)
+    #Hornsby.build(:fruit).copy_ivars(self)
+    hornsby_scenario :fruit
   end
 
   it "should have 2 fruits" do
@@ -98,7 +101,8 @@ end
 
 describe Hornsby, "don't repeat completed scenario" do
   before do
-    Hornsby.build(:bananas_and_more_apples).copy_ivars(self)
+    #Hornsby.build(:bananas_and_more_apples).copy_ivars(self)
+    hornsby_scenario :bananas_and_more_apples
   end
 
   it "should create only one apple" do
@@ -106,19 +110,14 @@ describe Hornsby, "don't repeat completed scenario" do
   end
 end
 
-=begin
 describe Hornsby, "run multiple scenarios" do
-  before do
-    #Hornsby.build(:bananas_and_more_apples).copy_ivars(self)
-    hornsby_scenario :just_apple, :just_orange
-  end
 
   it "should create both apple and orange" do
+    hornsby_scenario :just_apple, :just_orange
     @apple.should_not be_nil
     @orange.should_not be_nil
   end
 end
-=end
 
 #describe Hornsby, "with pitted namespace" do
 #  before do
