@@ -6,7 +6,8 @@ namespace :hornsby do
   task :scenario => :environment do
     raise "set SCENARIO to define which scenario to load" unless ENV['SCENARIO']
     ::Hornsby.load
-    ::Hornsby.build(ENV['SCENARIO'])
+    ::Hornsby.orm = ENV['ORM'].to_sym if ENV['ORM']
+    ::Hornsby.build(ENV['SCENARIO'].split(','), self)
   end
   
 end

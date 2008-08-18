@@ -32,7 +32,7 @@ class Hornsby
   def self.load(scenarios_file=nil)
     return unless @@scenarios.empty?
 
-    root = RAILS_ROOT rescue Merb.root
+    root = RAILS_ROOT rescue Merb.root.to_s
     
     scenarios_file ||= root+'/spec/hornsby_scenarios.rb'
     
