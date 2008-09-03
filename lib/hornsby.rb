@@ -5,6 +5,7 @@ class Hornsby
   @@delete_sql = "DELETE FROM %s"
   
   cattr_reader :scenarios
+  cattr_accessor :tables_to_delete
   cattr_accessor :orm
   @@scenarios = {}
   
@@ -117,7 +118,9 @@ class Hornsby
         klass.all.destroy!
       end
     elsif @@orm == :sequel
-      (Sequel::Model.db.tables - [:schema_info]).each do |t|
+      tables = (Sequel::Model.db.tables - [:schema_info])
+      tables = (@@tables_to_delete||[]) + (tables - (@@tables_to_delete||[]))
+      tables.each do |t|
         Sequel::Model.db << (@@delete_sql % t)
       end
     else
