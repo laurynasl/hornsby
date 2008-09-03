@@ -116,8 +116,12 @@ class Hornsby
         #klass.auto_migrate!
         klass.all.destroy!
       end
+    elsif @@orm == :sequel
+      (Sequel::Model.db.tables - [:schema_info]).each do |t|
+        Sequel::Model.db << (@@delete_sql % t)
+      end
     else
-      raise "Hornsby.orm must be set to either :activerecord or :datamapper"
+      raise "Hornsby.orm must be set to either :activerecord, :datamapper or :sequel"
     end
   end
 
