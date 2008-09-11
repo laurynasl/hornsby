@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/detect_framework'
+require 'yaml'
 
 class Hornsby
   @@record_name_fields = %w( name title username login )
@@ -30,12 +31,21 @@ class Hornsby
   def self.[](name)
   end
   
-  def self.load(scenarios_file=nil)
+  #def self.load(scenarios_file=nil)
+  def self.load
     return unless @@scenarios.empty?
 
     root = RAILS_ROOT rescue Merb.root.to_s
     
-    scenarios_file ||= root+'/spec/hornsby_scenarios.rb'
+    if File.exists?('.hornsby')
+      config = YAML.load(IO.read('.hornsby'))
+      scenarios_file = config['filename']
+      @@orm = config['orm'].to_sym if config['orm']
+      @@tables_to_delete = config['tables_to_delete'].collect {|t| t.to_sym} if config['tables_to_delete']
+    else
+      scenarios_file ||= root+'/spec/hornsby_scenarios.rb'
+    end
+
     
     self.module_eval File.read(scenarios_file)
   end
