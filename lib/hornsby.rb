@@ -1,5 +1,9 @@
-require File.dirname(__FILE__) + '/detect_framework'
+#require File.dirname(__FILE__) + '/detect_framework'
 require 'yaml'
+
+if defined?(Merb::Plugins)
+  Merb::Plugins.add_rakefiles "hornsby" / "tasks"
+end
 
 class Hornsby
   @@record_name_fields = %w( name title username login )
@@ -43,7 +47,26 @@ class Hornsby
       @@orm = config['orm'].to_sym if config['orm']
       @@tables_to_delete = config['tables_to_delete'].collect {|t| t.to_sym} if config['tables_to_delete']
     else
-      scenarios_file ||= root+'/spec/hornsby_scenarios.rb'
+      #scenarios_file ||= root+'/spec/hornsby_scenarios.rb'
+      File.open('.hornsby', 'w') do |f|
+        f.write "orm: sequel\n"
+        f.write "filename: hornsby_scenarios.rb\n"
+        f.write "tables_to_delete: []\n"
+      end
+      puts "generated Hornsby configuration file at .hornsby"
+
+      if File.exists?('hornsby_scenarios.rb')
+        puts "looks like file hornsby_scenarios.rb exists"
+      else
+        File.open('hornsby_scenarios.rb', 'w') do |f|
+          f.write "# for more information, see http://github.com/laurynasl/hornsby/wikis/usage\n"
+          f.write "scenario :sample do\n"
+          f.write "  \#@sample = SomeModel.create :name => \"Me\"\n"
+          f.write "end\n"
+        end
+        puts "created sample scenarios file at hornsby_scenarios.rb"
+      end
+      exit
     end
 
     

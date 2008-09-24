@@ -1,3 +1,4 @@
 log/*.log
 spec/db/hornsby.sqlite3.db
 spec/debug.log
+pkg
