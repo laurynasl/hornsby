@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.summary = "Totally different fixtures replacement"
   s.files = [
     "lib/hornsby.rb",
+    "lib/laurynasl-hornsby.rb",
     "lib/hornsby/tasks.rb",
     "README"
   ]
