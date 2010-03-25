@@ -1,9 +1,9 @@
-GEM_NAME = "hornsby"
-GEM_VERSION = "0.0.1"
+gem_name = "hornsby"
+gem_version = "0.0.1"
 
 Gem::Specification.new do |s| 
-  s.name = GEM_NAME
-  s.version = GEM_VERSION
+  s.name = gem_name
+  s.version = gem_version
   s.author = "Laurynas Liutkus"
   s.email = "laurynasl@gmail.com"
   s.homepage = "http://github.com/laurynasl/hornsby/"
