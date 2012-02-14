@@ -39,7 +39,15 @@ class Hornsby
   def self.load
     return unless @@scenarios.empty?
 
-    root = RAILS_ROOT rescue Merb.root.to_s
+    root = if defined?(RAILS_ROOT)
+      RAILS_ROOT
+    elsif defined?(Rails)
+      Rails.root.to_s
+    elsif defined?(Merb)
+      Merb.root.to_s
+    else
+      raise "giving up to find root"
+    end
     
     if File.exists?('.hornsby')
       config = YAML.load(IO.read('.hornsby'))
